@@ -34,8 +34,8 @@ const login = asyncHandler(async (req, res) => {
 
 	const {user, accessToken, refreshToken} = await authenticate(email, password);
 
-	res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict", secure: true});
-	res.cookie("refreshToken", refreshToken, {httpOnly: true, sameSite: "strict", secure: true});
+	// res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict", secure: true});
+	// res.cookie("refreshToken", refreshToken, {httpOnly: true, sameSite: "strict", secure: true});
 
 	const accessTokenExpiresAt = Date.now() + Number(ACCESS_TOKEN_EXPIRY);
 
@@ -54,15 +54,15 @@ const refresh = asyncHandler(async (req, res) => {
 
 	const accessTokenExpiresAt = Date.now() + Number(ACCESS_TOKEN_EXPIRY);
 
-	res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict", secure: true});
-	res.cookie("refreshToken", newRrefreshToken, {httpOnly: true, sameSite: "strict", secure: true});
+	// res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict", secure: true});
+	// res.cookie("refreshToken", newRrefreshToken, {httpOnly: true, sameSite: "strict", secure: true});
 
-	return res.status(200).json(new ApiResponse(200, {accessToken, refreshToken, accessTokenExpiresAt}, "Token refreshed."));
+	return res.status(200).json(new ApiResponse(200, {accessToken, refreshToken: newRrefreshToken, accessTokenExpiresAt}, "Token refreshed."));
 });
 
 const logout = (req, res) => {
-	res.clearCookie("refreshToken", {httpOnly: true, sameSite: "strict", secure: true});
-	res.clearCookie("accessToken", {httpOnly: true, sameSite: "strict", secure: true});
+	// res.clearCookie("refreshToken", {httpOnly: true, sameSite: "strict", secure: true});
+	// res.clearCookie("accessToken", {httpOnly: true, sameSite: "strict", secure: true});
 
 	return res.status(200).json(new ApiResponse(200, {}, "Logged out."));
 };

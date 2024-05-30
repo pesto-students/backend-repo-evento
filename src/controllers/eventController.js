@@ -2,6 +2,7 @@ const {ApiResponse} = require("../utils/apiResponse");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const prisma = require("../prisma");
+const uploadOnCloudinary = require("../utils/cloudinary");
 
 const getSingleEvent = asyncHandler(async (req, res) => {
 	const id = parseInt(req.params.id);
@@ -26,7 +27,41 @@ const getAllEvents = asyncHandler(async (req, res) => {
 	return res.status(200).json(new ApiResponse(200, {events, page, pageSize, total}));
 });
 
+const uploadEventBanner = asyncHandler(async (req, res) => {
+	const fileLocalPath = req.file?.path;
+
+	if (!fileLocalPath) {
+		throw new ApiError(400, "File is missing");
+	}
+
+	const banner = await uploadOnCloudinary(fileLocalPath, "evento/banners");
+
+	if (!banner?.url) {
+		throw new ApiError(400, "Error while uploading on avatar");
+	}
+
+	return res.status(200).json(new ApiResponse(200, {url: banner?.url}, "Avatar image updated successfully"));
+});
+
+const uploadEventThumbnail = asyncHandler(async (req, res) => {
+	const fileLocalPath = req.file?.path;
+
+	if (!fileLocalPath) {
+		throw new ApiError(400, "File is missing");
+	}
+
+	const thumbnail = await uploadOnCloudinary(fileLocalPath, "evento/thumbnails");
+
+	if (!thumbnail?.url) {
+		throw new ApiError(400, "Error while uploading on avatar");
+	}
+
+	return res.status(200).json(new ApiResponse(200, {url: thumbnail?.url}, "Avatar image updated successfully"));
+});
+
 module.exports = {
 	getSingleEvent,
 	getAllEvents,
+	uploadEventBanner,
+	uploadEventThumbnail,
 };
