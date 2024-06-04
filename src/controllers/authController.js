@@ -37,9 +37,7 @@ const login = asyncHandler(async (req, res) => {
 	// res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict", secure: true});
 	// res.cookie("refreshToken", refreshToken, {httpOnly: true, sameSite: "strict", secure: true});
 
-	const accessTokenExpiresAt = Date.now() + Number(ACCESS_TOKEN_EXPIRY);
-
-	return res.status(200).json(new ApiResponse(200, {user, accessToken, refreshToken, accessTokenExpiresAt}, "Logged in successfully."));
+	return res.status(200).json(new ApiResponse(200, {user, accessToken, refreshToken}, "Logged in successfully."));
 });
 
 const refresh = asyncHandler(async (req, res) => {
@@ -52,12 +50,10 @@ const refresh = asyncHandler(async (req, res) => {
 	const accessToken = generateAccessToken(user);
 	const newRrefreshToken = generateRefreshToken(user);
 
-	const accessTokenExpiresAt = Date.now() + Number(ACCESS_TOKEN_EXPIRY);
-
 	// res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict", secure: true});
 	// res.cookie("refreshToken", newRrefreshToken, {httpOnly: true, sameSite: "strict", secure: true});
 
-	return res.status(200).json(new ApiResponse(200, {accessToken, refreshToken: newRrefreshToken, accessTokenExpiresAt}, "Token refreshed."));
+	return res.status(200).json(new ApiResponse(200, {accessToken, refreshToken: newRrefreshToken}, "Token refreshed."));
 });
 
 const logout = (req, res) => {
