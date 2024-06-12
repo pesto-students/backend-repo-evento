@@ -3,6 +3,8 @@ const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const prisma = require("../prisma");
 const uploadOnCloudinary = require("../utils/cloudinary");
+const {STRIPE_SUCCESS_URL, STRIPE_SECRET_KEY, STRIPE_CANCEL_URL} = require("../config");
+const stripe = require("stripe")(STRIPE_SECRET_KEY);
 
 const getSingleEvent = asyncHandler(async (req, res) => {
 	const id = parseInt(req.params.id);
@@ -79,9 +81,56 @@ const createEvent = asyncHandler(async (req, res) => {
 		plan: "BASIC",
 	};
 
-	setTimeout(() => {
-		return res.status(200).json(new ApiResponse(200, {event}, "Avatar image updated successfully"));
-	}, 2000);
+	return res.status(200).json(new ApiResponse(200, {event}, "Avatar image updated successfully"));
+});
+
+const createCheckoutSession = asyncHandler(async (req, res) => {
+	// find event using the req.body.eventId & check it is not paid
+
+	const price = 499;
+	const event = {
+		id: 1,
+		title: "AR Rahman Concert",
+		thumbnailUrl: "https://res.cloudinary.com/dv68nyejy/image/upload/v1712380759/Evento/thumbnail/b_praak2_opndqq.webp",
+	};
+
+	const session = await stripe.checkout.sessions.create({
+		line_items: [
+			{
+				price_data: {
+					currency: "inr",
+					unit_amount: Math.round(price * 100),
+					product_data: {
+						name: event?.title,
+						description: "BASIC Plan",
+						images: [event?.thumbnailUrl], // This should be a live url
+					},
+				},
+				quantity: 1,
+			},
+		],
+		mode: "payment",
+		payment_method_types: ["card"],
+		success_url: STRIPE_SUCCESS_URL,
+		cancel_url: STRIPE_CANCEL_URL,
+		customer_email: req.user?.email,
+		customer_name: req.user?.name,
+		client_reference_id: event?.id,
+		metadata: {
+			customer_name: req.user?.name,
+			customer_email: req.user?.email,
+		},
+		customer: {
+			name: req.user?.name,
+			email: req.user?.email,
+		},
+		billing_address_collection: "required",
+	});
+
+	res.status(200).json({
+		status: "success",
+		session,
+	});
 });
 
 module.exports = {
@@ -90,4 +139,5 @@ module.exports = {
 	uploadEventBanner,
 	uploadEventThumbnail,
 	createEvent,
+	createCheckoutSession,
 };
