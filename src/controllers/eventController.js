@@ -81,7 +81,7 @@ const createEvent = asyncHandler(async (req, res) => {
 		plan: "BASIC",
 	};
 
-	return res.status(200).json(new ApiResponse(200, {event}, "Avatar image updated successfully"));
+	return res.status(200).json(new ApiResponse(200, {event}, "Event created successfully"));
 });
 
 const createCheckoutSession = asyncHandler(async (req, res) => {
