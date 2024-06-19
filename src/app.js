@@ -10,6 +10,7 @@ const {createServer} = require("http");
 const {Server} = require("socket.io");
 const {initializeSocketIO} = require("./socket");
 const logger = require("./logger");
+const puppeteer = require("puppeteer");
 
 const PORT = config.SERVER.PORT;
 const app = express();
@@ -48,6 +49,48 @@ const eventRouter = require("./routes/eventRoutes");
 
 app.use(`/api/v1/auth`, authRouter);
 app.use(`/api/v1/events`, eventRouter);
+
+// TEST -------------------->
+
+app.get("/trustpilot", async (req, res) => {
+	try {
+		// Launch a new browser instance
+		const browser = await puppeteer.launch({headless: true});
+		const page = await browser.newPage();
+
+		// Load the page with the Trustpilot widget
+		await page.goto("https://upconvert.de/debsc13", {waitUntil: "networkidle2"});
+
+		// Wait for the iframe to be added to the DOM
+		await page.waitForSelector("#tp-container iframe");
+
+		// Get the iframe element
+		const iframeElement = await page.$("#tp-container iframe");
+
+		// Get the iframe's content frame
+		const iframe = await iframeElement.contentFrame();
+
+		// Wait for the desired element inside the iframe to be loaded and updated by main.js
+		await iframe.waitForSelector("#translations-main", {visible: true});
+
+		// Extract the text content of the desired element
+		const ratingString = await iframe.$eval("#translations-main", (el) => el.innerText);
+
+		const ratingMatch = ratingString.match(/^\d+\.\d+/);
+		const rating = ratingMatch ? ratingMatch[0] : null;
+
+		res.status(200).json({
+			rating,
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({
+			error: "An error occurred while fetching rating.",
+		});
+	}
+});
+
+// <--------------------------
 
 app.get("/", (req, res) => {
 	res.status(200).json({message: "Welcome to evento API"});
