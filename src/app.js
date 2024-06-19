@@ -49,6 +49,10 @@ const eventRouter = require("./routes/eventRoutes");
 app.use(`/api/v1/auth`, authRouter);
 app.use(`/api/v1/events`, eventRouter);
 
+app.get("/", (req, res) => {
+	res.status(200).json({message: "Welcome to evento API"});
+});
+
 app.all("*", (req, res) => {
 	res.status(404).json({error: `Can't find ${req.originalUrl}`});
 });
