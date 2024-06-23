@@ -45,6 +45,8 @@ model Event {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   categories     EventCategory[]
+  userId         Int
+  user           User            @relation(fields: [userId], references: [id])
 }
 
 model Category {
@@ -74,4 +76,5 @@ model User {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Event     Event[]
 }

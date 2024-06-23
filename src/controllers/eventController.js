@@ -79,6 +79,8 @@ const createEvent = asyncHandler(async (req, res) => {
 		organizerEmail: "testssdsds@mail.com",
 		organizerPhone: "123123312",
 		plan: "BASIC",
+		userId: 1,
+		status: "UNDER_REVIEW",
 	};
 
 	return res.status(200).json(new ApiResponse(200, {event}, "Event created successfully"));

@@ -67,6 +67,7 @@ async function main() {
 				categories: {
 					create: formattedCategories,
 				},
+                userId: 1
 			},
 		});
 	}
