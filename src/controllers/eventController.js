@@ -4,6 +4,7 @@ const ApiError = require("../utils/ApiError");
 const prisma = require("../prisma");
 const uploadOnCloudinary = require("../utils/cloudinary");
 const {STRIPE_SUCCESS_URL, STRIPE_SECRET_KEY, STRIPE_CANCEL_URL} = require("../config");
+const {UserRoles} = require("../utils/constants");
 const stripe = require("stripe")(STRIPE_SECRET_KEY);
 
 const getSingleEvent = asyncHandler(async (req, res) => {
@@ -16,17 +17,24 @@ const getSingleEvent = asyncHandler(async (req, res) => {
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
-	const page = req.query.page ? parseInt(req.query.page) : 1;
-	const pageSize = req.query.limit ? parseInt(req.query.limit) : 100;
-	const skip = (page - 1) * pageSize;
+	if (req.user.role === UserRoles.MANAGER) {
+		const page = req.query.page ? parseInt(req.query.page) : 1;
+		const pageSize = req.query.limit ? parseInt(req.query.limit) : 100;
+		const skip = (page - 1) * pageSize;
 
-	const events = await prisma.event.findMany({
-		skip,
-		take: pageSize,
-	});
-	const total = await prisma.event.count();
+		const events = await prisma.event.findMany({
+			skip,
+			take: pageSize,
+			where: {
+				userId: req.user.id,
+			},
+		});
 
-	return res.status(200).json(new ApiResponse(200, {events, page, pageSize, total}));
+		const total = await prisma.event.count();
+
+		return res.status(200).json(new ApiResponse(200, {events, page, pageSize, total}));
+	}
+	// else for USER & ADMIN
 });
 
 const uploadEventBanner = asyncHandler(async (req, res) => {
