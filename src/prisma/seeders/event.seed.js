@@ -67,7 +67,8 @@ async function main() {
 				categories: {
 					create: formattedCategories,
 				},
-                userId: 1
+				userId: 1,
+				status: "LIVE",
 			},
 		});
 	}

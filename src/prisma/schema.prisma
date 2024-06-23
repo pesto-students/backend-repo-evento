@@ -24,6 +24,12 @@ enum Role {
   ADMIN
 }
 
+enum Status {
+  PAYMENT_PENDING
+  UNDER_REVIEW
+  LIVE
+}
+
 model Event {
   id             Int             @id @default(autoincrement())
   title          String          @db.VarChar(255)
@@ -47,6 +53,7 @@ model Event {
   categories     EventCategory[]
   userId         Int
   user           User            @relation(fields: [userId], references: [id])
+  status         Status
 }
 
 model Category {
