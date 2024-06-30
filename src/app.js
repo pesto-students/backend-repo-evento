@@ -46,9 +46,11 @@ app.use(helmet());
 // Routes
 const authRouter = require("./routes/authRoutes");
 const eventRouter = require("./routes/eventRoutes");
+const homeRouter = require("./routes/homeRoutes");
 
 app.use(`/api/v1/auth`, authRouter);
 app.use(`/api/v1/events`, eventRouter);
+app.use(`/api/v1/home`, homeRouter);
 
 // TEST -------------------->
 

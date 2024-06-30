@@ -17,7 +17,8 @@ const getSingleEvent = asyncHandler(async (req, res) => {
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
-	if (req.user.role === UserRoles.MANAGER) {
+	// For MANAGER
+	if (req.user?.role === UserRoles.MANAGER) {
 		const page = req.query.page ? parseInt(req.query.page) : 1;
 		const pageSize = req.query.limit ? parseInt(req.query.limit) : 100;
 		const skip = (page - 1) * pageSize;
@@ -34,7 +35,8 @@ const getAllEvents = asyncHandler(async (req, res) => {
 
 		return res.status(200).json(new ApiResponse(200, {events, page, pageSize, total}));
 	}
-	// else for USER & ADMIN
+
+	// For ADMIN
 });
 
 const uploadEventBanner = asyncHandler(async (req, res) => {
